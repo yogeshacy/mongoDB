@@ -1,0 +1,194 @@
+use school
+db 
+show dbs
+*********** Insert ************
+db.school.insert({"name":"yogesh"})
+use sample
+db
+db.mycollection.insert({"name":"yogesh","age":"25",})
+db.mycollection2.insert({"name":"yogesh","age":"25",})
+show collections
+db.mycollection2.drop()
+db.dropDatabase()
+
+db.student.insert(
+[
+ {
+    "sname":"Giri",
+	"sage":"16",
+	"std":"10",
+	"sadd":"Erd"
+ },
+ {
+    "sname":"Madhu",
+	"sage":"10",
+	"std":"6",
+	"sadd":"Cbe"
+ },
+ {
+    "sname":"Navin",
+	"sage":"18",
+	"std":"12",
+	"sadd":"Blr"
+ },
+ {
+    "sname":"Siva",
+	"sage":"13",
+	"std":"9",
+	"sadd":"Ch"
+ },
+ {
+    "sname":"Krish",
+	"sage":"17",
+	"std":"6",
+	"sadd":"Cbe"
+ }
+ ])
+ 
+*****Find*****
+use school
+db.student.find().pretty()
+db.student.findOne()
+db.student.find(
+{
+    "sname":"kavin"
+}
+)
+
+db.student.find(
+{
+    "sage":{$ne:"15"} [gt, gte, lt, lte, ne]
+}
+)
+
+******AND***********
+db.student.find(
+{
+    "sname":"kavin","sage":"17"
+}
+)
+*****OR**********
+db.student.find(
+{
+    $or:[{"sname":"kavin"},{"sage":"17"}]
+}
+)
+
+*********AND***OR************
+db.student.find(
+{
+    "sadd":"Ch",$or:[{"sage":"10"},{"sage":"17"}]
+}
+)
+************Update************
+
+db.student.find({
+}).pretty()
+
+db.student.find({
+    "sname":"Balu"
+}).pretty()
+db.student.update(
+{"_id": ObjectId("63a3cc372c4065b10465207d")},
+{$set:{"sname":"Balu"}}
+)
+
+db.student.update(
+{"sage":"15"},
+{$set:{"sadd":"Slm"}},
+{multi: true}
+)
+
+db.student.save({ "_id" : ObjectId("63a3cc372c4065b10465207c"), "sname" : "Arun", "sage" : "16", "std" : "12", "sadd" : "Erd" })
+
+*********Remove********
+db.student.remove(
+{
+   "_id":ObjectId("63a3cc372c4065b10465207c") 
+}
+)
+
+db.student.remove(
+{
+   "sage":"15"
+}
+)
+db.student.find({})
+
+************Projection**************
+selcting only for necessary data from document
+db.student.find({},{"sadd":1, "_id":0})
+
+************Limit & SORT & Skip
+db.student.find({},{"sadd":1, "sname":1,"_id":0}).limit(5)
+db.student.find({},{"sadd":1, "sname":1,"_id":0}).skip(3)
+db.student.find({},{"sadd":1, "sname":1,"_id":0}).skip(3).limit(4)
+db.student.find({},{"sadd":1, "sname":1,"_id":0}).sort({"sname":1})
+
+******INDEX****************
+db.posts.ensureIndex({"roll":1})
+db.posts.dropIndex({"roll":1})  
+
+********Aggericaion*********      
+
+db.student.aggregate([{$group:{_id:"$sadd",MyResult:{$sum:1}}}])
+db.student.aggregate([{$group:{_id:"$sadd",MaxAge:{$max:"$sage"}}}])
+db.student.aggregate([{$group:{_id:"$sadd",MaxAge:{$min:"$sage"}}}])   		 
+
+--------------------------
+
+    use school
+
+for(i=0;i<100000000;++i){
+    db.posts.insert({"roll":i, "name":"yogesh"});
+}
+db.posts.ensureIndex({"roll":1})
+db.posts.dropIndex({"roll":1})
+
+
+for(i=0;i<10;++i){db.tmp_table.insert({"roll":i, "name":"yogesh"});}
+
+
+
+db.books.insertOne({"title": "JAVA","author": "yogesh","pages": 400,"genres": ["Tech","Programming"],"rating": 8})
+db.books.insertOne({"title": "J2EE","author": "Kavin","pages": 800,"genres": ["Programming"],"rating": 8})
+db.books.insertOne({"title": "Spring","author": "Ram","pages": 600,"genres": ["framwork","Tech"],"rating": 8})
+db.books.insertOne({"title": "Spring Boot","author": "Bala","pages": 900,"genres": ["framwork","Web Tech"],"rating": 8})
+db.books.insertOne({"title": "Hibernate","author": "Tom","pages": 1000,"genres": ["framework","DB"],"rating": 8})
+db.books.insertOne({"title": "MySQL","author": "Terry","pages": 300,"genres": ["DB","NoSQL"],"rating": 8})
+db.books.insertOne({"title": "MonoDB","author": "Jerry","pages": 500,"genres": ["DB","SQL"],"rating": 8})
+
+
+db.books.insertMany([{"title": "MongoDB","author": "yogesh","pages": 600,"genres": ["Tech"],"rating": 8},{"title": "Spring","author": "yogesh","pages": 400,"genres": ["Tech"],"rating": 8}])
+
+db.books.find({author:"yogesh"})
+db.books.find({author:"yogesh"},{title:1,author:1})
+db.books.find({author:"yogesh"},{_id:0,title:1,author:1})
+db.books.findOne({_id:ObjectId("63a8005ade9cf42f6e51bef7")})
+
+db.books.find().count()
+db.books.find({author:"yogesh"}).count()
+db.books.find({author:"yogesh"}).limit(3)
+db.books.find().sort({title:1})
+db.books.find().sort({title:-1})
+
+db.books.insertOne({"title": "mysql","author": "yogesh","pages": 400,"genres": ["Tech","DB"],"rating": 8, "review":[{name:"tom",content:"good"},{name:"jerry",content:"okay"},{name:"beam",content:"need to more clear"}]})
+
+db.books.find({rating:{$gt:8}})
+db.books.find({rating:{$gt:8}}).count()
+db.books.find({rating:{$gte:8}, title:"mysql"})
+db.books.find({$or:[{rating:7},{rating:9}]})
+db.books.find({rating:{$in:[7,8,9]}})
+db.books.find({$or:[{rating:7},{rating:9},{rating:8}]})
+db.books.find({rating:{$nin:[7,8,9]}})
+db.books.find({genres:["Tech"]})
+db.books.find({genres:{$in:["DB"]}})
+db.books.find({genres:"Tech"})
+db.books.find({genres:{$all:["Tech","DB"]}})
+db.books.find({"review.name":"tom"})
+
+db.books.deleteOne({_id:ObjectId('63a7f469472741108e1ec3cb')})
+db.books.deleteMany({author:"yogesh"})
+
+db.books.updateOne({_id:ObjectId("63a82a5dde9cf42f6e51befe")},{$set:{name:"Teddy"}})
+db.books.updateOne({_id:ObjectId("63a82a5dde9cf42f6e51befe")},{$set:{author:"Teddy",pages:700}})	
